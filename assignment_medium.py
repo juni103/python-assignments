@@ -86,13 +86,15 @@ print("Is valid {}: {}".format(data_type, result))
 '''
 4. File Handling:
 
-Read a CSV file containing student data and calculate average grades.
-Create a text-based address book.
-Example Input 1: CSV file with student data
-Example Output 1: Prints average grade for each student
-Example Input 2: (user interaction)
-Add contact: Name: "Alice", Phone: "555-1212"
-Search: "Alice"
+* Read a CSV file containing student data and calculate average grades.
+* Create a text-based address book.
+
+* Example Input 1: CSV file with student data
+* Example Output 1: Prints average grade for each student
+
+* Example Input 2: (user interaction)
+  * Add contact: Name: "Alice", Phone: "555-1212"
+  * Search: "Alice"
 Example Output 2: Prints Alice's contact information
 '''
 import csv
@@ -116,3 +118,70 @@ def print_avg_grades(file_path):
 
 print_avg_grades('student-scores.csv')
 
+'''
+  * Example Input 2: (user interaction)
+    * Add contact: Name: "Alice", Phone: "555-1212"
+    * Search: "Alice"
+  Example Output 2: Prints Alice's contact information
+'''
+import json
+import os
+
+def add_contact(name, phone, file_path='address_book.json'):
+    # if os.path.exists(file_path):
+    #     with open(file_path, 'r') as file:
+    #         address_book = json.load(file)
+    # else:
+    #     address_book = {}
+
+    address_book = {}
+    address_book[name.strip()] = phone
+
+    with open(file_path, 'w+') as file:
+        json.dump(address_book, file)
+
+def search_contact(name, file_path='address_book.json'):
+    with open(file_path, 'r') as file:
+            address_book = json.load(file)
+            return address_book.get(name, "Contact not found.")
+
+def add_contact_interactive(file_path, cd_add_contact):
+    name = input("Name: ")
+    phone = input("Phone: ")
+    cd_add_contact(name, phone, file_path)
+    print(f"Contact {name} added with phone number {phone}.")
+
+def search_contact_interactive(file_path, cb_search_contact):
+    name = input("Search: ")
+    return cb_search_contact(name, file_path)
+
+print("====== JSON Address Book =======")
+json_file_path = 'address_book.json'
+print("Add Contact:")
+add_contact_interactive(json_file_path, add_contact)
+search_result = search_contact_interactive(json_file_path, search_contact)
+print(f"Search Result: {search_result}")
+
+def add_contact_in_text_file(name, phone, file_path='address_book.txt'):
+    with open(file_path, 'w') as file:
+        file.write(f"{name.strip()},{phone}\n")
+
+def search_contact_in_text_file(name, file_path='address_book.txt'):
+    with open(file_path, 'r') as file:
+        for line in file:
+            if line.startswith(name.strip()):
+                return line.strip()
+    return None
+
+
+print("====== Text File Address Book =======")
+text_file_path = 'address_book.txt'
+print("Add Contact:")
+add_contact_interactive(text_file_path, add_contact_in_text_file)
+search_contact_interactive(text_file_path, search_contact_in_text_file)
+search_result = search_contact_in_text_file("Alice")
+
+if not search_result:
+    print("Contact not found.")
+else:
+  print(f"Search Result: {search_result.split(',')[1].strip()}")
